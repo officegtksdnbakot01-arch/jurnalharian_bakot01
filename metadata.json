@@ -1,0 +1,6 @@
+{
+  "name": "SIKAWAN - Jurnal Harian SDN Babelan Kota 01",
+  "description": "Aplikasi Jurnal Harian Kinerja Pegawai SIKAWAN 2026 SDN Babelan Kota 01 Kabupaten Bekasi terintegrasi Google Spreadsheet dan cetak dokumen format resmi F4.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

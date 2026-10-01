@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SIKAWAN - Jurnal Harian SDN Babelan Kota 01</title>
+    <meta name="description" content="Aplikasi Jurnal Harian Kinerja Pegawai SIKAWAN 2026 SDN Babelan Kota 01 Kabupaten Bekasi terintegrasi Google Spreadsheet dan cetak dokumen format resmi F4." />
+    <meta property="og:title" content="SIKAWAN - Jurnal Harian SDN Babelan Kota 01" />
+    <meta property="og:description" content="Aplikasi Jurnal Harian Kinerja Pegawai SIKAWAN 2026 SDN Babelan Kota 01 Kabupaten Bekasi terintegrasi Google Spreadsheet dan cetak dokumen format resmi F4." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Tinos:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" crossorigin="anonymous">
+    <style>
+      @media print {
+        body {
+          background: white !important;
+          color: black !important;
+          padding: 0 !important;
+          margin: 0 !important;
+        }
+        .no-print {
+          display: none !important;
+        }
+        .print-only {
+          display: block !important;
+        }
+        @page {
+          size: 210mm 330mm; /* F4 Portrait 210x330 mm */
+          margin: 12mm 12mm 12mm 12mm; /* Margin 1.2 cm */
+        }
+      }
+      @media screen {
+        .print-only {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-900 font-sans antialiased selection:bg-blue-600 selection:text-white">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
