@@ -275,11 +275,11 @@ export const SekolahSettings: React.FC<SekolahSettingsProps> = ({
                     {isLocked ? 'Tersimpan di Semua Perangkat' : 'Mode Edit'}
                   </span>
                 </div>
-                <p className="text-xs text-blue-200/90 mt-1 leading-relaxed max-w-2xl">
-                  {isLocked
-                    ? 'Nama Kepala Sekolah, NIP, Tanda Tangan Digital, Stempel Dinas, dan Kop Surat telah tersimpan langsung di dalam aplikasi secara permanen. Pengguna atau perangkat lain langsung menampilkan profil ini tanpa perlu upload ulang.'
-                    : 'Silakan perbarui nama, NIP, atau berkas tanda tangan, stempel, dan kop sekolah. Klik "Simpan Perubahan" atau "Kunci Profil" untuk menyimpannya secara permanen.'}
-                </p>
+                {!isLocked && (
+                  <p className="text-xs text-blue-200/90 mt-1 leading-relaxed max-w-2xl">
+                    Silakan perbarui nama, NIP, atau berkas tanda tangan, stempel, dan kop sekolah. Klik "Simpan Perubahan" atau "Kunci Profil" untuk menyimpannya secara permanen.
+                  </p>
+                )}
               </div>
             </div>
 
