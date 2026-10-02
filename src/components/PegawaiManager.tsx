@@ -305,7 +305,7 @@ export const PegawaiManager: React.FC<PegawaiManagerProps> = ({
         <div className="flex items-center justify-between gap-3 mb-5">
           <div className="flex items-center gap-2.5 text-blue-950 font-bold text-base sm:text-lg">
             <UserPlus className="w-5 h-5 text-blue-900 shrink-0" />
-            <span>{editingId ? 'Edit Data Pegawai' : 'Tambah Pegawai Baru'}</span>
+            <span>{editingId ? 'Edit Data Pegawai' : 'Pegawai Baru/Edit'}</span>
           </div>
 
           {editingId && (

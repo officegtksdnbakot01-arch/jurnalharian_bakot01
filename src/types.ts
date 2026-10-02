@@ -60,6 +60,7 @@ export interface SekolahConfig {
   kepalaSekolahFoto?: string;
   kopSekolahUrl?: string;
   stempelSekolahUrl?: string;
+  isLocked?: boolean;
   gasWebAppUrl?: string;
   lastSync?: string;
 }

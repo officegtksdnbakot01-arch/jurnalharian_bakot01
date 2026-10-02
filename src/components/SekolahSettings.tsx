@@ -15,7 +15,11 @@ import {
   FileText,
   Download,
   FileSpreadsheet,
-  X
+  X,
+  Lock,
+  Unlock,
+  ShieldCheck,
+  RotateCcw
 } from 'lucide-react';
 import { syncToGoogleAppsScript } from '../services/gasApi';
 import { 
@@ -23,6 +27,7 @@ import {
   exportSekolahToExcel, 
   importSekolahFromExcel 
 } from '../services/excelService';
+import { INITIAL_SEKOLAH } from '../data/initialData';
 import { CoolSaveNotification, SaveNotificationData } from './CoolSaveNotification';
 
 interface SekolahSettingsProps {
@@ -47,16 +52,21 @@ export const SekolahSettings: React.FC<SekolahSettingsProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSaveSekolah(formData);
+    const configToSave: SekolahConfig = {
+      ...formData,
+      isLocked: true,
+    };
+    setFormData(configToSave);
+    onSaveSekolah(configToSave);
 
     // Sync to GAS if URL configured
-    if (formData.gasWebAppUrl) {
-      await syncToGoogleAppsScript(formData.gasWebAppUrl, 'simpanSekolah', {
-        ...formData,
-        fotoKepsekBase64: formData.kepalaSekolahFoto,
-        ttdKepsekBase64: formData.kepalaSekolahTtd,
-        stempelBase64: formData.stempelSekolahUrl,
-        kopBase64: formData.kopSekolahUrl,
+    if (configToSave.gasWebAppUrl) {
+      await syncToGoogleAppsScript(configToSave.gasWebAppUrl, 'simpanSekolah', {
+        ...configToSave,
+        fotoKepsekBase64: configToSave.kepalaSekolahFoto,
+        ttdKepsekBase64: configToSave.kepalaSekolahTtd,
+        stempelBase64: configToSave.stempelSekolahUrl,
+        kopBase64: configToSave.kopSekolahUrl,
       });
     }
 
@@ -64,9 +74,9 @@ export const SekolahSettings: React.FC<SekolahSettingsProps> = ({
     setTimeout(() => setSavedSuccess(false), 3000);
 
     setCoolNotification({
-      title: 'Perubahan Berhasil Disimpan!',
-      message: `Profil & Pengaturan ${formData.namaSekolah || 'SDN Babelan Kota 01'} beserta Pejabat Penilai telah disimpan secara permanen.`,
-      badge: 'Tersimpan Permanen',
+      title: 'Profil Resmi Berhasil Disimpan & Dikunci!',
+      message: `Profil ${configToSave.namaSekolah || 'SDN Babelan Kota 01'} beserta Pejabat Penilai, TTD, Stempel, dan Kop tersimpan permanen untuk seluruh perangkat.`,
+      badge: 'Terkunci & Permanen',
     });
   };
 
@@ -245,6 +255,84 @@ export const SekolahSettings: React.FC<SekolahSettingsProps> = ({
         </div>
       )}
 
+      {/* ========================================================= */}
+      {/* BANNER STATUS KUNCI & PERMANEN PROFIL SEKOLAH             */}
+      {/* ========================================================= */}
+      {(() => {
+        const isLocked = formData.isLocked !== false;
+        return (
+          <div className="bg-gradient-to-r from-blue-950 via-slate-900 to-indigo-950 text-white rounded-2xl p-4 sm:p-5 border border-blue-500/30 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex items-start gap-3.5">
+              <div className={`p-2.5 rounded-xl shrink-0 mt-0.5 ${isLocked ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-400/40' : 'bg-amber-500/20 text-amber-400 border border-amber-400/40'}`}>
+                {isLocked ? <ShieldCheck className="w-6 h-6" /> : <Unlock className="w-6 h-6" />}
+              </div>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="font-extrabold text-sm sm:text-base text-white tracking-tight">
+                    {isLocked ? 'Profil Pejabat Penilai Dikunci Resmi (Tersimpan Permanen)' : 'Mode Pengeditan Profil Sekolah Terbuka'}
+                  </h3>
+                  <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${isLocked ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/40' : 'bg-amber-500/20 text-amber-300 border border-amber-400/40'}`}>
+                    {isLocked ? 'Tersimpan di Semua Perangkat' : 'Mode Edit'}
+                  </span>
+                </div>
+                <p className="text-xs text-blue-200/90 mt-1 leading-relaxed max-w-2xl">
+                  {isLocked
+                    ? 'Nama Kepala Sekolah, NIP, Tanda Tangan Digital, Stempel Dinas, dan Kop Surat telah tersimpan langsung di dalam aplikasi secara permanen. Pengguna atau perangkat lain langsung menampilkan profil ini tanpa perlu upload ulang.'
+                    : 'Silakan perbarui nama, NIP, atau berkas tanda tangan, stempel, dan kop sekolah. Klik "Simpan Perubahan" atau "Kunci Profil" untuk menyimpannya secara permanen.'}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0 self-start md:self-auto flex-wrap">
+              <button
+                type="button"
+                onClick={() => {
+                  const newLocked = !isLocked;
+                  const updated = { ...formData, isLocked: newLocked };
+                  setFormData(updated);
+                  onSaveSekolah(updated);
+                  setCoolNotification({
+                    title: newLocked ? 'Profil Resmi Berhasil Dikunci!' : 'Kunci Profil Dibuka!',
+                    message: newLocked
+                      ? 'Data Kepala Sekolah, NIP, TTD, Stempel, dan Kop terkunci aman untuk seluruh perangkat.'
+                      : 'Anda sekarang dapat mengedit nama, NIP, atau mengganti tanda tangan/stempel/kop.',
+                    badge: newLocked ? 'Terkunci Aman' : 'Mode Edit',
+                  });
+                }}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer ${
+                  isLocked
+                    ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600'
+                    : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-900/30'
+                }`}
+              >
+                {isLocked ? <Unlock className="w-3.5 h-3.5 text-amber-400" /> : <Lock className="w-3.5 h-3.5 text-emerald-200" />}
+                <span>{isLocked ? 'Buka Kunci untuk Edit' : 'Kunci Profil Sekarang'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (confirm('Pulihkan profil sekolah dan pejabat penilai ke data resmi bawaan (SDN Babelan Kota 01)?')) {
+                    setFormData({ ...INITIAL_SEKOLAH });
+                    onSaveSekolah(INITIAL_SEKOLAH);
+                    setCoolNotification({
+                      title: 'Profil Resmi Berhasil Dipulihkan!',
+                      message: 'Nama Kepala Sekolah, NIP, TTD, Stempel, dan Kop SDN Babelan Kota 01 kembali aktif secara utuh.',
+                      badge: 'Tersimpan Permanen',
+                    });
+                  }
+                }}
+                className="flex items-center gap-1.5 px-3 py-2 bg-blue-900/60 hover:bg-blue-800/80 text-blue-200 border border-blue-400/20 rounded-xl text-xs font-medium cursor-pointer transition-colors"
+                title="Pulihkan seluruh data pejabat penilai, TTD, Stempel, dan Kop ke bawaan resmi SDN Babelan Kota 01"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Reset Resmi Bawaan</span>
+              </button>
+            </div>
+          </div>
+        );
+      })()}
+
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Card: Data Kepala Sekolah (Pejabat Penilai) */}
         <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-5 text-xs">
@@ -273,9 +361,14 @@ export const SekolahSettings: React.FC<SekolahSettingsProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* 1. Nama Kepala Sekolah */}
             <div>
-              <label className="block font-semibold text-slate-700 mb-1.5 text-xs">
-                Nama Kepala Sekolah
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block font-semibold text-slate-700 text-xs">
+                  Nama Kepala Sekolah
+                </label>
+                <span className="text-[10px] font-semibold text-emerald-700 flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Tersimpan Langsung
+                </span>
+              </div>
               <input
                 type="text"
                 value={formData.kepalaSekolahNama}
@@ -290,9 +383,14 @@ export const SekolahSettings: React.FC<SekolahSettingsProps> = ({
 
             {/* 2. NIP Kepala Sekolah */}
             <div>
-              <label className="block font-semibold text-slate-700 mb-1.5 text-xs">
-                NIP Kepala Sekolah
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block font-semibold text-slate-700 text-xs">
+                  NIP Kepala Sekolah
+                </label>
+                <span className="text-[10px] font-semibold text-emerald-700 flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Tersimpan Langsung
+                </span>
+              </div>
               <input
                 type="text"
                 value={formData.kepalaSekolahNIP}
@@ -309,29 +407,42 @@ export const SekolahSettings: React.FC<SekolahSettingsProps> = ({
           {/* 3. Upload Tanda Tangan Kepala Sekolah */}
           <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <label className="font-semibold text-slate-800 text-xs">
-                Upload Tanda Tangan Kepala Sekolah
-              </label>
               <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setSigModalOpen(true)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold text-blue-700 bg-white border border-slate-300 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
-                >
-                  <PenTool className="w-3.5 h-3.5" />
-                  <span>Tulis / Goreskan TTD</span>
-                </button>
-                <label className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer">
-                  <Upload className="w-3.5 h-3.5" />
-                  <span>Unggah Berkas Gambar</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleUploadFile(e, 'kepalaSekolahTtd')}
-                    className="hidden"
-                  />
+                <label className="font-semibold text-slate-800 text-xs">
+                  Tanda Tangan Kepala Sekolah
                 </label>
+                <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100/90 px-2 py-0.5 rounded-full border border-emerald-300/80">
+                  Tersimpan Permanen
+                </span>
               </div>
+
+              {formData.isLocked !== false ? (
+                <div className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-300 px-2.5 py-1 rounded-lg">
+                  <Lock className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Terkunci Otomatis di Semua Perangkat</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setSigModalOpen(true)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold text-blue-700 bg-white border border-slate-300 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                  >
+                    <PenTool className="w-3.5 h-3.5" />
+                    <span>Tulis / Goreskan TTD</span>
+                  </button>
+                  <label className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer">
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>Unggah Berkas Gambar</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleUploadFile(e, 'kepalaSekolahTtd')}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+              )}
             </div>
 
             <div className="h-28 bg-white border border-dashed border-slate-300 rounded-lg flex items-center justify-center relative overflow-hidden">
@@ -342,14 +453,16 @@ export const SekolahSettings: React.FC<SekolahSettingsProps> = ({
                     alt="TTD Kepala Sekolah"
                     className="max-h-24 max-w-[200px] object-contain"
                   />
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, kepalaSekolahTtd: '' })}
-                    className="absolute top-2 right-2 p-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-md transition-colors"
-                    title="Hapus Tanda Tangan"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                  {formData.isLocked === false && (
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, kepalaSekolahTtd: '' })}
+                      className="absolute top-2 right-2 p-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-md transition-colors"
+                      title="Hapus Tanda Tangan"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                 </div>
               ) : (
                 <span className="text-slate-400 italic text-xs">
@@ -362,33 +475,44 @@ export const SekolahSettings: React.FC<SekolahSettingsProps> = ({
           {/* 4. Upload Stempel Sekolah */}
           <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <div>
-                <label className="font-semibold text-slate-800 text-xs block">
-                  Upload Stempel Sekolah
-                </label>
-              </div>
               <div className="flex items-center gap-2">
-                <label className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer shrink-0">
-                  <Upload className="w-3.5 h-3.5" />
-                  <span>Pilih File Stempel</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleUploadFile(e, 'stempelSekolahUrl')}
-                    className="hidden"
-                  />
+                <label className="font-semibold text-slate-800 text-xs block">
+                  Stempel Sekolah
                 </label>
-                {formData.stempelSekolahUrl && (
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, stempelSekolahUrl: '' })}
-                    className="p-1.5 bg-white border border-slate-300 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                    title="Gunakan stempel standar"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                )}
+                <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100/90 px-2 py-0.5 rounded-full border border-emerald-300/80">
+                  Tersimpan Permanen
+                </span>
               </div>
+
+              {formData.isLocked !== false ? (
+                <div className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-300 px-2.5 py-1 rounded-lg">
+                  <Lock className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Stempel Dinas Resmi Siap Pakai</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <label className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer shrink-0">
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>Pilih File Stempel</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleUploadFile(e, 'stempelSekolahUrl')}
+                      className="hidden"
+                    />
+                  </label>
+                  {formData.stempelSekolahUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, stempelSekolahUrl: '' })}
+                      className="p-1.5 bg-white border border-slate-300 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                      title="Gunakan stempel standar"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
 
             <div className="h-28 bg-white border border-dashed border-slate-300 rounded-lg flex items-center justify-center p-2">
@@ -412,33 +536,44 @@ export const SekolahSettings: React.FC<SekolahSettingsProps> = ({
           {/* 5. Upload Kop Sekolah */}
           <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <div>
-                <label className="font-semibold text-slate-800 text-xs block">
-                  Upload Kop Sekolah
-                </label>
-              </div>
               <div className="flex items-center gap-2">
-                <label className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer shrink-0">
-                  <Upload className="w-3.5 h-3.5" />
-                  <span>Pilih File Kop</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleUploadFile(e, 'kopSekolahUrl')}
-                    className="hidden"
-                  />
+                <label className="font-semibold text-slate-800 text-xs block">
+                  Kop Sekolah
                 </label>
-                {formData.kopSekolahUrl && (
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, kopSekolahUrl: '' })}
-                    className="p-1.5 bg-white border border-slate-300 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                    title="Gunakan kop surat standar"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                )}
+                <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100/90 px-2 py-0.5 rounded-full border border-emerald-300/80">
+                  Tersimpan Permanen
+                </span>
               </div>
+
+              {formData.isLocked !== false ? (
+                <div className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-300 px-2.5 py-1 rounded-lg">
+                  <Lock className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Kop Surat Resmi Siap Pakai</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <label className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer shrink-0">
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>Pilih File Kop</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleUploadFile(e, 'kopSekolahUrl')}
+                      className="hidden"
+                    />
+                  </label>
+                  {formData.kopSekolahUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, kopSekolahUrl: '' })}
+                      className="p-1.5 bg-white border border-slate-300 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                      title="Gunakan kop surat standar"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
 
             <div className="p-3 bg-white border border-dashed border-slate-300 rounded-lg flex items-center justify-center min-h-28">

@@ -11,11 +11,28 @@ export const getSekolahConfig = (): SekolahConfig => {
   try {
     const raw = localStorage.getItem(KEYS.SEKOLAH);
     if (!raw) return INITIAL_SEKOLAH;
-    return { ...INITIAL_SEKOLAH, ...JSON.parse(raw) };
+    const parsed = JSON.parse(raw);
+    return {
+      ...INITIAL_SEKOLAH,
+      ...parsed,
+      // Pastikan data pejabat penilai, TTD, stempel, dan kop bawaan resmi tidak pernah kosong
+      kepalaSekolahNama: parsed.kepalaSekolahNama || INITIAL_SEKOLAH.kepalaSekolahNama,
+      kepalaSekolahNIP: parsed.kepalaSekolahNIP || INITIAL_SEKOLAH.kepalaSekolahNIP,
+      kepalaSekolahGolongan: parsed.kepalaSekolahGolongan || INITIAL_SEKOLAH.kepalaSekolahGolongan,
+      kepalaSekolahTtd: parsed.kepalaSekolahTtd || INITIAL_SEKOLAH.kepalaSekolahTtd,
+      stempelSekolahUrl: parsed.stempelSekolahUrl || INITIAL_SEKOLAH.stempelSekolahUrl,
+      kopSekolahUrl: parsed.kopSekolahUrl || INITIAL_SEKOLAH.kopSekolahUrl,
+      isLocked: parsed.isLocked !== undefined ? parsed.isLocked : true,
+    };
   } catch (e) {
     console.error('Error loading sekolah config', e);
     return INITIAL_SEKOLAH;
   }
+};
+
+export const resetToOfficialSekolahConfig = (): SekolahConfig => {
+  saveSekolahConfig(INITIAL_SEKOLAH);
+  return INITIAL_SEKOLAH;
 };
 
 export const saveSekolahConfig = (config: SekolahConfig): void => {

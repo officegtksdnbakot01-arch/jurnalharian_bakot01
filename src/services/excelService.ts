@@ -722,12 +722,12 @@ export const exportRiwayatHarianToExcel = async (
     { key: 'status', width: 20 },
   ];
 
-  // 1. BANNER TITLE ROW 1: "RIWAYAT JURNAL HARIAN PEGAWAI"
+  // 1. BANNER TITLE ROW 1: "RIWAYAT JURNAL HARIAN"
   worksheet.mergeCells('A1:I1');
   const titleRow = worksheet.getRow(1);
   titleRow.height = 32;
   const titleCell = worksheet.getCell('A1');
-  titleCell.value = 'RIWAYAT JURNAL HARIAN PEGAWAI';
+  titleCell.value = 'RIWAYAT JURNAL HARIAN';
   titleCell.fill = {
     type: 'pattern',
     pattern: 'solid',

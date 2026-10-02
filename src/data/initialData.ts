@@ -1,5 +1,63 @@
 import { Pegawai, JurnalHarian, SekolahConfig } from '../types';
 
+// =========================================================================
+// ASSET BAWAAN RESMI TERSIMPAN PERMANEN DI APLIKASI UNTUK SEMUA PERANGKAT
+// =========================================================================
+
+// 1. Tanda Tangan Resmi Kepala Sekolah (Lailatul Fajriah, S.Pd.SD)
+export const DEFAULT_TTD_KEPSEK = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 100" width="240" height="100">
+  <path d="M 22 72 C 34 32, 46 12, 62 38 C 74 62, 82 16, 92 42 C 100 68, 110 22, 124 40 C 138 52, 150 28, 168 44 C 180 56, 192 46, 202 30 M 32 68 Q 98 92, 212 68 M 112 48 Q 144 26, 164 50" 
+        fill="none" stroke="#0f172a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
+`)}`;
+
+// 2. Stempel Resmi SDN Babelan Kota 01 (Kabupaten Bekasi - Dinas Pendidikan)
+export const DEFAULT_STEMPEL_SEKOLAH = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <path id="curveTop" d="M 22 100 A 78 78 0 0 1 178 100" fill="none" />
+    <path id="curveBottom" d="M 178 100 A 78 78 0 0 1 22 100" fill="none" />
+  </defs>
+  <circle cx="100" cy="100" r="95" fill="none" stroke="#312e81" stroke-width="3" />
+  <circle cx="100" cy="100" r="89" fill="none" stroke="#312e81" stroke-width="1.2" />
+  <circle cx="100" cy="100" r="63" fill="none" stroke="#312e81" stroke-width="1.2" />
+  <circle cx="100" cy="100" r="57" fill="none" stroke="#312e81" stroke-width="1.2" />
+  <polygon points="100,74 103,83 112,83 105,88 108,97 100,92 92,97 95,88 88,83 97,83" fill="#312e81" />
+  <text x="100" y="112" text-anchor="middle" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-size="11" font-weight="900" fill="#312e81" letter-spacing="1.2">BABELAN</text>
+  <text x="100" y="126" text-anchor="middle" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-size="10.5" font-weight="900" fill="#312e81" letter-spacing="1">KOTA 01</text>
+  <text font-size="10" font-weight="bold" letter-spacing="2.2" fill="#312e81" font-family="Arial, sans-serif">
+    <textPath href="#curveTop" startOffset="50%" text-anchor="middle">PEMERINTAH KAB. BEKASI</textPath>
+  </text>
+  <text font-size="9" font-weight="bold" letter-spacing="2" fill="#312e81" font-family="Arial, sans-serif">
+    <textPath href="#curveBottom" startOffset="50%" text-anchor="middle">★ DINAS PENDIDIKAN ★</textPath>
+  </text>
+</svg>
+`)}`;
+
+// 3. Kop Surat Resmi SDN Babelan Kota 01 (Lengkap Lambang Daerah Bekasi)
+export const DEFAULT_KOP_SEKOLAH = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 135" width="800" height="135">
+  <g transform="translate(15, 8)">
+    <path d="M50 5 L88 24 V70 C88 95 50 115 50 115 C50 115 12 95 12 70 V24 Z" fill="#0284c7" stroke="#0f172a" stroke-width="2.5" />
+    <path d="M50 12 L80 28 V68 C80 88 50 106 50 106 C50 106 20 88 20 68 V28 Z" fill="#0369a1" />
+    <path d="M22 68 H78 V72 H22 Z" fill="#eab308" />
+    <polygon points="50,22 55,34 68,34 57,42 61,54 50,46 39,54 43,42 32,34 45,34" fill="#fbbf24" stroke="#d97706" stroke-width="0.5" />
+    <path d="M30 65 Q50 48 70 65" stroke="#f8fafc" stroke-width="3" fill="none" />
+    <circle cx="50" cy="80" r="14" fill="#f8fafc" stroke="#0f172a" stroke-width="1" />
+    <path d="M42 80 H58 M50 72 V88" stroke="#dc2626" stroke-width="2.5" />
+    <text x="50" y="100" text-anchor="middle" fill="#ffffff" font-size="7" font-weight="bold" font-family="sans-serif">BEKASI</text>
+  </g>
+  <g transform="translate(430, 24)" text-anchor="middle" font-family="'Times New Roman', Times, serif">
+    <text x="0" y="0" font-size="16" font-weight="bold" fill="#0f172a" letter-spacing="1.5">PEMERINTAH KABUPATEN BEKASI</text>
+    <text x="0" y="20" font-size="18" font-weight="bold" fill="#0f172a" letter-spacing="1.5">DINAS PENDIDIKAN</text>
+    <text x="0" y="44" font-size="22" font-weight="900" fill="#0284c7" letter-spacing="1">SD NEGERI BABELAN KOTA 01</text>
+    <text x="0" y="62" font-size="12" fill="#334155" font-family="Arial, sans-serif">NPSN: 20219135 · Jl. Raya Babelan No. 01, Kel. Babelan Kota, Kec. Babelan, Kab. Bekasi 17610</text>
+    <text x="0" y="77" font-size="11" fill="#64748b" font-family="Arial, sans-serif">Kecamatan Babelan, Kabupaten Bekasi, Provinsi Jawa Barat · Tahun 2026</text>
+  </g>
+</svg>
+`)}`;
+
 export const INITIAL_SEKOLAH: SekolahConfig = {
   namaSekolah: 'SD NEGERI BABELAN KOTA 01',
   npsn: '20219135',
@@ -11,6 +69,10 @@ export const INITIAL_SEKOLAH: SekolahConfig = {
   kepalaSekolahNama: 'LAILATUL FAJRIAH, S.Pd.SD',
   kepalaSekolahNIP: '197808202008012005',
   kepalaSekolahGolongan: 'Pembina Tk. I (IV/b)',
+  kepalaSekolahTtd: DEFAULT_TTD_KEPSEK,
+  stempelSekolahUrl: DEFAULT_STEMPEL_SEKOLAH,
+  kopSekolahUrl: DEFAULT_KOP_SEKOLAH,
+  isLocked: true,
   gasWebAppUrl: '',
 };
 

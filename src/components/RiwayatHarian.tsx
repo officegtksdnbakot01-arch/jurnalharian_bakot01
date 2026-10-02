@@ -108,14 +108,11 @@ export const RiwayatHarian: React.FC<RiwayatHarianProps> = ({
         <div>
           <div className="flex items-center gap-2.5 text-blue-950 font-bold text-base sm:text-lg">
             <CalendarDays className="w-5 h-5 text-blue-900 shrink-0" />
-            <span>Riwayat Jurnal Harian Pegawai</span>
+            <span>Riwayat Jurnal Harian</span>
             <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200">
               {jurnals.length} Entri
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Daftar pengisian jurnal harian setiap pegawai yang tersimpan secara teratur dan siap dicetak/diedit.
-          </p>
         </div>
 
         <div className="flex items-center gap-2.5 shrink-0 self-start md:self-auto flex-wrap">
