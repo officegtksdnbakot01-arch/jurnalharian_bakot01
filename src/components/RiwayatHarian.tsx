@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { JurnalHarian, Pegawai, SekolahConfig } from '../types';
 import { F4PrintDocument } from './F4PrintDocument';
+import { exportRiwayatHarianToExcel } from '../services/excelService';
 import { 
   CalendarDays, 
   Pencil, 
@@ -13,7 +14,9 @@ import {
   CheckCircle2, 
   Printer, 
   PlusCircle,
-  Layers
+  Layers,
+  FileSpreadsheet,
+  Download
 } from 'lucide-react';
 
 interface RiwayatHarianProps {
@@ -36,6 +39,23 @@ export const RiwayatHarian: React.FC<RiwayatHarianProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
   const [previewJurnal, setPreviewJurnal] = useState<JurnalHarian | null>(null);
+  const [isExportingExcel, setIsExportingExcel] = useState(false);
+
+  const handleExportRiwayatExcel = async () => {
+    if (jurnals.length === 0) {
+      alert('Belum ada data riwayat jurnal harian untuk diunduh.');
+      return;
+    }
+    try {
+      setIsExportingExcel(true);
+      await exportRiwayatHarianToExcel(jurnals, pegawaiList, sekolah);
+    } catch (err) {
+      console.error('Gagal mengunduh file Excel riwayat harian:', err);
+      alert('Terjadi kesalahan saat mengunduh Excel.');
+    } finally {
+      setIsExportingExcel(false);
+    }
+  };
 
   // Helper untuk mendapatkan data pegawai dari jurnal
   const getPegawaiInfo = (jurnal: JurnalHarian) => {
@@ -98,14 +118,27 @@ export const RiwayatHarian: React.FC<RiwayatHarianProps> = ({
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={onAddNewJurnal}
-          className="flex items-center gap-1.5 px-4 py-2 bg-blue-900 hover:bg-blue-950 active:bg-blue-950 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer shrink-0 self-start md:self-auto"
-        >
-          <PlusCircle className="w-4 h-4" />
-          <span>Isi Jurnal Baru</span>
-        </button>
+        <div className="flex items-center gap-2.5 shrink-0 self-start md:self-auto flex-wrap">
+          <button
+            type="button"
+            onClick={handleExportRiwayatExcel}
+            disabled={isExportingExcel || jurnals.length === 0}
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white rounded-lg text-xs font-semibold shadow-xs transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Unduh format Excel (.xlsx) Riwayat Jurnal Harian dengan tabel dan border resmi"
+          >
+            <FileSpreadsheet className="w-4 h-4 text-emerald-200" />
+            <span>{isExportingExcel ? 'Mengunduh...' : 'Unduh Riwayat (.xlsx)'}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={onAddNewJurnal}
+            className="flex items-center gap-1.5 px-4 py-2 bg-blue-900 hover:bg-blue-950 active:bg-blue-950 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+          >
+            <PlusCircle className="w-4 h-4" />
+            <span>Isi Jurnal Baru</span>
+          </button>
+        </div>
       </div>
 
       {/* 2. Filter & Pencarian */}

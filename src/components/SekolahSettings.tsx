@@ -23,6 +23,7 @@ import {
   exportSekolahToExcel, 
   importSekolahFromExcel 
 } from '../services/excelService';
+import { CoolSaveNotification, SaveNotificationData } from './CoolSaveNotification';
 
 interface SekolahSettingsProps {
   sekolah: SekolahConfig;
@@ -42,6 +43,7 @@ export const SekolahSettings: React.FC<SekolahSettingsProps> = ({
   const [isImporting, setIsImporting] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [coolNotification, setCoolNotification] = useState<SaveNotificationData | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,6 +62,12 @@ export const SekolahSettings: React.FC<SekolahSettingsProps> = ({
 
     setSavedSuccess(true);
     setTimeout(() => setSavedSuccess(false), 3000);
+
+    setCoolNotification({
+      title: 'Perubahan Berhasil Disimpan!',
+      message: `Profil & Pengaturan ${formData.namaSekolah || 'SDN Babelan Kota 01'} beserta Pejabat Penilai telah disimpan secara permanen.`,
+      badge: 'Tersimpan Permanen',
+    });
   };
 
   const handleDownloadSekolahTemplate = async () => {
@@ -194,6 +202,12 @@ export const SekolahSettings: React.FC<SekolahSettingsProps> = ({
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
+      {/* Notifikasi Keren & Menarik saat Simpan Berhasil */}
+      <CoolSaveNotification
+        data={coolNotification}
+        onClose={() => setCoolNotification(null)}
+      />
+
       {/* Hidden file input for Excel import */}
       <input
         type="file"
@@ -241,34 +255,13 @@ export const SekolahSettings: React.FC<SekolahSettingsProps> = ({
               <span>Pejabat Penilai</span>
             </div>
 
-            {/* Tombol Aksi Profil Sekolah: Unduh Format, Impor, Ekspor */}
+            {/* Tombol Aksi Profil Sekolah: Ekspor */}
             <div className="flex items-center flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={handleDownloadSekolahTemplate}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-900 hover:bg-blue-950 active:bg-blue-950 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer"
-                title="Unduh format template Profil Sekolah (Excel)"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>Unduh Format</span>
-              </button>
-
-              <button
-                type="button"
-                disabled={isImporting}
-                onClick={() => importFileInputRef.current?.click()}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
-                title="Impor profil sekolah dari Excel (.xlsx)"
-              >
-                <Upload className="w-3.5 h-3.5" />
-                <span>{isImporting ? 'Mengimpor...' : 'Impor'}</span>
-              </button>
-
               <button
                 type="button"
                 disabled={isExporting}
                 onClick={handleExportSekolah}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-700 hover:bg-indigo-800 active:bg-indigo-900 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-indigo-700 hover:bg-indigo-800 active:bg-indigo-900 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
                 title="Ekspor profil sekolah & berkas base64 ke Excel"
               >
                 <FileSpreadsheet className="w-3.5 h-3.5" />
@@ -470,9 +463,9 @@ export const SekolahSettings: React.FC<SekolahSettingsProps> = ({
         <div className="flex justify-end">
           <button
             type="submit"
-            className="flex items-center gap-2 px-6 py-2.5 bg-blue-700 hover:bg-blue-800 text-white font-semibold text-xs md:text-sm rounded-lg shadow-sm transition-colors cursor-pointer"
+            className="flex items-center gap-2.5 px-7 py-3 bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-800 hover:from-blue-950 hover:to-indigo-900 active:scale-[0.98] text-white font-bold text-xs md:text-sm rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer"
           >
-            <Save className="w-4 h-4" />
+            <Save className="w-4 h-4 text-emerald-300" />
             <span>Simpan Perubahan</span>
           </button>
         </div>

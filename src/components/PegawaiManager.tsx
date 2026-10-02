@@ -23,6 +23,7 @@ import {
   exportPegawaiToExcel, 
   importPegawaiFromExcel 
 } from '../services/excelService';
+import { CoolSaveNotification, SaveNotificationData } from './CoolSaveNotification';
 
 interface PegawaiManagerProps {
   pegawaiList: Pegawai[];
@@ -61,6 +62,7 @@ export const PegawaiManager: React.FC<PegawaiManagerProps> = ({
   const [isImporting, setIsImporting] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [coolNotification, setCoolNotification] = useState<SaveNotificationData | null>(null);
 
   const resetForm = () => {
     setEditingId(null);
@@ -144,6 +146,12 @@ export const PegawaiManager: React.FC<PegawaiManagerProps> = ({
     setFeedback(editingId ? `Data ${pegawaiData.nama} berhasil diperbarui!` : `Pegawai ${pegawaiData.nama} berhasil disimpan!`);
     setTimeout(() => setFeedback(null), 3500);
 
+    setCoolNotification({
+      title: editingId ? 'Data Pegawai Berhasil Diperbarui!' : 'Data Pegawai Berhasil Disimpan!',
+      message: `Profil ${pegawaiData.nama} (${pegawaiData.nip !== '-' ? 'NIP. ' + pegawaiData.nip : 'Non-NIP'}) tersimpan resmi ke sistem SDN Babelan Kota 01.`,
+      badge: 'Tersimpan Permanen',
+    });
+
     resetForm();
   };
 
@@ -171,7 +179,7 @@ export const PegawaiManager: React.FC<PegawaiManagerProps> = ({
   // 2. EKSPOR DATA KE EXCEL
   const handleExportExcel = async () => {
     if (pegawaiList.length === 0) {
-      alert('Belum ada data pegawai untuk diekspor. Silakan tambahkan pegawai terlebih dahulu atau gunakan Unduh Format untuk mengisi data.');
+      alert('Belum ada data pegawai untuk diekspor. Silakan tambahkan pegawai terlebih dahulu melalui form di atas.');
       return;
     }
     try {
@@ -252,6 +260,12 @@ export const PegawaiManager: React.FC<PegawaiManagerProps> = ({
 
   return (
     <div className="space-y-8 max-w-6xl mx-auto">
+      {/* Notifikasi Keren & Menarik saat Simpan Berhasil */}
+      <CoolSaveNotification
+        data={coolNotification}
+        onClose={() => setCoolNotification(null)}
+      />
+
       {/* Hidden file input for Excel import */}
       <input
         type="file"
@@ -443,9 +457,9 @@ export const PegawaiManager: React.FC<PegawaiManagerProps> = ({
           <div className="pt-2 flex items-center gap-3">
             <button
               type="submit"
-              className="bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white font-semibold px-5 py-2.5 rounded-lg flex items-center gap-2 text-xs sm:text-sm shadow-xs transition-colors cursor-pointer"
+              className="bg-gradient-to-r from-emerald-700 to-teal-700 hover:from-emerald-800 hover:to-teal-800 active:scale-[0.98] text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 text-xs sm:text-sm shadow-md hover:shadow-lg transition-all cursor-pointer"
             >
-              <Save className="w-4 h-4" />
+              <Save className="w-4 h-4 text-emerald-200" />
               <span>Simpan Data Pegawai</span>
             </button>
 
@@ -477,37 +491,14 @@ export const PegawaiManager: React.FC<PegawaiManagerProps> = ({
             </span>
           </div>
 
-          {/* Tombol Aksi: Unduh Format, Impor, Ekspor */}
+          {/* Tombol Aksi: Ekspor */}
           <div className="flex items-center flex-wrap gap-2">
-            {/* Tombol Unduh Format Template Excel */}
-            <button
-              type="button"
-              onClick={handleDownloadTemplate}
-              className="flex items-center gap-1.5 px-3 py-2 bg-blue-900 hover:bg-blue-950 active:bg-blue-950 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer"
-              title="Unduh template Excel berformat tabel/border dan warna resmi (#1e3a8a)"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>Unduh Format</span>
-            </button>
-
-            {/* Tombol Impor Data Pegawai dari Excel */}
-            <button
-              type="button"
-              disabled={isImporting}
-              onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-1.5 px-3 py-2 bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
-              title="Impor data pegawai dari file Excel (.xlsx) sesuai format resmi"
-            >
-              <Upload className="w-3.5 h-3.5" />
-              <span>{isImporting ? 'Mengimpor...' : 'Impor'}</span>
-            </button>
-
             {/* Tombol Ekspor Seluruh Data Pegawai ke Excel */}
             <button
               type="button"
               disabled={isExporting || pegawaiList.length === 0}
               onClick={handleExportExcel}
-              className="flex items-center gap-1.5 px-3 py-2 bg-indigo-700 hover:bg-indigo-800 active:bg-indigo-900 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-indigo-700 hover:bg-indigo-800 active:bg-indigo-900 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
               title="Ekspor seluruh data pegawai ke Excel dengan border dan warna resmi aplikasi"
             >
               <FileSpreadsheet className="w-3.5 h-3.5" />
@@ -607,26 +598,8 @@ export const PegawaiManager: React.FC<PegawaiManagerProps> = ({
                         Belum Ada Pegawai Terdaftar
                       </p>
                       <p className="text-xs text-slate-500 leading-relaxed">
-                        Silakan input pegawai baru melalui form di atas atau gunakan tombol <strong>Unduh Format</strong> & <strong>Impor</strong> dari file Excel.
+                        Silakan tambahkan data pegawai baru secara langsung melalui formulir di atas.
                       </p>
-                      <div className="flex items-center justify-center gap-2 pt-1">
-                        <button
-                          type="button"
-                          onClick={handleDownloadTemplate}
-                          className="px-3.5 py-1.5 bg-blue-900 hover:bg-blue-950 text-white rounded-lg text-xs font-semibold flex items-center gap-1 cursor-pointer transition-colors"
-                        >
-                          <Download className="w-3.5 h-3.5" />
-                          Unduh Format Excel
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => fileInputRef.current?.click()}
-                          className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold flex items-center gap-1 cursor-pointer transition-colors"
-                        >
-                          <Upload className="w-3.5 h-3.5" />
-                          Impor dari Excel
-                        </button>
-                      </div>
                     </div>
                   </td>
                 </tr>

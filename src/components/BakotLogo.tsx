@@ -1,15 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface BakotLogoProps {
   className?: string;
   size?: number | string;
+  alt?: string;
 }
 
 export const BakotLogo: React.FC<BakotLogoProps> = ({
   className = 'w-10 h-10',
   size,
+  alt = 'logo-bakot-01',
 }) => {
+  const [loadFailed, setLoadFailed] = useState(false);
   const style = size ? { width: size, height: size } : undefined;
+
+  if (!loadFailed) {
+    return (
+      <img
+        src="https://i.ibb.co.com/M5NsSPzS/logo-bakot-01.png"
+        alt={alt}
+        className={`shrink-0 object-contain ${className}`}
+        style={style}
+        referrerPolicy="no-referrer"
+        onError={() => setLoadFailed(true)}
+      />
+    );
+  }
 
   return (
     <svg

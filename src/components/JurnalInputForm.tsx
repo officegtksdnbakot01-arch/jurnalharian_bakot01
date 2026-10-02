@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Pegawai, JurnalHarian, SekolahConfig, KegiatanItem } from '../types';
 import { F4PrintDocument } from './F4PrintDocument';
 import { 
@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { syncToGoogleAppsScript } from '../services/gasApi';
 import { downloadF4Pdf } from '../services/pdfExporter';
+import { CoolSaveNotification, SaveNotificationData } from './CoolSaveNotification';
 
 interface JurnalInputFormProps {
   pegawaiList: Pegawai[];
@@ -131,6 +132,46 @@ export const JurnalInputForm: React.FC<JurnalInputFormProps> = ({
   const [tanggal, setTanggal] = useState<string>(initialToday);
   const [hari, setHari] = useState<string>(getHariFromDateString(initialToday));
   const [selectedShift, setSelectedShift] = useState<string>('guru-pagi');
+  const [coolNotification, setCoolNotification] = useState<SaveNotificationData | null>(null);
+
+  // Zoom Controls & Responsive State untuk LEMBAR KERJA (F4)
+  const previewContainerRef = useRef<HTMLDivElement | null>(null);
+  const [zoomScale, setZoomScale] = useState<number>(0.97);
+  const [isFitScreenActive, setIsFitScreenActive] = useState<boolean>(false);
+
+  const calculateFitScale = () => {
+    if (!previewContainerRef.current) return 0.97;
+    const padding = window.innerWidth < 640 ? 16 : 32;
+    const availableWidth = previewContainerRef.current.clientWidth - padding;
+    const f4WidthPx = 794; // 210mm in pixels at 96 DPI
+    const rawScale = availableWidth / f4WidthPx;
+    return Number(Math.min(1.25, Math.max(0.3, rawScale)).toFixed(2));
+  };
+
+  const handleFitScreen = () => {
+    setIsFitScreenActive(true);
+    setZoomScale(calculateFitScale());
+  };
+
+  const handleSetScale = (scale: number) => {
+    setIsFitScreenActive(false);
+    setZoomScale(Number(scale.toFixed(2)));
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (isFitScreenActive || window.innerWidth < 1024) {
+        setZoomScale(calculateFitScale());
+      }
+    };
+
+    if (window.innerWidth < 1024) {
+      handleFitScreen();
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isFitScreenActive]);
 
   // Multi Kegiatan State (sesuai kegiatan.png)
   const [kegiatanList, setKegiatanList] = useState<KegiatanItem[]>([
@@ -508,10 +549,20 @@ export const JurnalInputForm: React.FC<JurnalInputFormProps> = ({
           type: 'success',
           message: 'Berhasil! Jurnal telah tersimpan ke Google Sheets & Foto ke Google Drive.',
         });
+        setCoolNotification({
+          title: editingJurnal ? 'Jurnal Harian Diperbarui!' : 'Jurnal Harian Berhasil Disimpan!',
+          message: `Laporan kegiatan ${currentPegawai?.nama || 'Pegawai'} tanggal ${tanggal} (${hari}) tersimpan ke sistem & Google Sheets. Dokumen siap dicetak resmi!`,
+          badge: 'Tersimpan & Siap Cetak',
+        });
       } else {
         setSubmitStatus({
           type: 'success',
           message: 'Berhasil tersimpan ke sistem SIKAWAN 2026! Siap dicetak format F4.',
+        });
+        setCoolNotification({
+          title: editingJurnal ? 'Jurnal Harian Diperbarui!' : 'Jurnal Harian Berhasil Disimpan!',
+          message: `Laporan kinerja ${currentPegawai?.nama || 'Pegawai'} untuk tanggal ${tanggal} (${hari}) telah berhasil disimpan secara permanen.`,
+          badge: 'Tersimpan Resmi',
         });
       }
 
@@ -542,6 +593,12 @@ export const JurnalInputForm: React.FC<JurnalInputFormProps> = ({
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      {/* Notifikasi Keren & Menarik saat Simpan Berhasil */}
+      <CoolSaveNotification
+        data={coolNotification}
+        onClose={() => setCoolNotification(null)}
+      />
+
       {/* ========================================================= */}
       {/* KOLOM KIRI: FORM INPUT JURNAL HARIAN */}
       {/* ========================================================= */}
@@ -874,10 +931,19 @@ export const JurnalInputForm: React.FC<JurnalInputFormProps> = ({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex-1 py-3 px-4 bg-gradient-to-r from-blue-900 via-blue-800 to-blue-700 hover:from-blue-950 hover:to-blue-800 text-white font-semibold rounded-xl text-xs md:text-sm shadow-xs transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                className="flex-1 py-3 px-5 bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-800 hover:from-blue-950 hover:to-indigo-900 active:scale-[0.98] text-white font-bold rounded-xl text-xs md:text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-60"
               >
-                <Upload className="w-4 h-4" />
-                <span>{isSubmitting ? 'Menyimpan Jurnal...' : 'Simpan Jurnal Harian'}</span>
+                {isSubmitting ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                    <span>Menyimpan Jurnal...</span>
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="w-4 h-4 text-emerald-300" />
+                    <span>Simpan Jurnal Harian</span>
+                  </>
+                )}
               </button>
 
               <button
@@ -896,32 +962,130 @@ export const JurnalInputForm: React.FC<JurnalInputFormProps> = ({
       </div>
 
       {/* ========================================================= */}
-      {/* KOLOM KANAN: PRATINJAU LANGSUNG DOKUMEN F4 */}
+      {/* KOLOM KANAN: LEMBAR KERJA DOKUMEN F4 */}
       {/* ========================================================= */}
       <div className="lg:col-span-6 lg:sticky lg:top-[124px]">
-        <div className="bg-slate-900 text-white px-4 py-2.5 rounded-t-xl flex items-center justify-between">
+        {/* Header Toolbar LEMBAR KERJA */}
+        <div className="bg-slate-900 text-white px-3 sm:px-4 py-2.5 rounded-t-xl flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 shadow-xs">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-xs font-bold tracking-wide uppercase">
-              Pratinjau Langsung Lembar F4 Resmi
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+            <span className="text-xs font-extrabold tracking-wider uppercase text-white">
+              LEMBAR KERJA
             </span>
           </div>
-          <button
-            onClick={() => setShowPrintModal(true)}
-            className="flex items-center gap-1 text-[11px] font-medium bg-blue-600 hover:bg-blue-500 text-white px-2.5 py-1 rounded-sm transition-colors cursor-pointer"
-          >
-            <Download className="w-3.5 h-3.5" />
-            Simpan PDF
-          </button>
+
+          {/* Kontrol Zoom: 97%, Pas Layar, 100%, -/+ */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {/* Tombol 97% */}
+            <button
+              type="button"
+              onClick={() => handleSetScale(0.97)}
+              className={`px-2 py-1 text-[11px] font-bold rounded-md transition-all cursor-pointer ${
+                !isFitScreenActive && Math.abs(zoomScale - 0.97) < 0.01
+                  ? 'bg-blue-600 text-white shadow-xs ring-1 ring-blue-300'
+                  : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'
+              }`}
+              title="Perbesar / Perkecil ke 97%"
+            >
+              97%
+            </button>
+
+            {/* Tombol Pas Layar */}
+            <button
+              type="button"
+              onClick={handleFitScreen}
+              className={`px-2 py-1 text-[11px] font-bold rounded-md transition-all cursor-pointer ${
+                isFitScreenActive
+                  ? 'bg-blue-600 text-white shadow-xs ring-1 ring-blue-300'
+                  : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'
+              }`}
+              title="Sesuaikan ukuran lembar kerja dengan lebar layar perangkat Anda"
+            >
+              Pas Layar
+            </button>
+
+            {/* Tombol 100% */}
+            <button
+              type="button"
+              onClick={() => handleSetScale(1.0)}
+              className={`px-2 py-1 text-[11px] font-bold rounded-md transition-all cursor-pointer ${
+                !isFitScreenActive && Math.abs(zoomScale - 1.0) < 0.01
+                  ? 'bg-blue-600 text-white shadow-xs ring-1 ring-blue-300'
+                  : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'
+              }`}
+              title="Ukuran Asli Dokumen F4 (100%)"
+            >
+              100%
+            </button>
+
+            {/* Tombol - dan + */}
+            <div className="flex items-center bg-slate-800 rounded-md p-0.5 border border-slate-700">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsFitScreenActive(false);
+                  setZoomScale((prev) => Math.max(0.3, Number((prev - 0.05).toFixed(2))));
+                }}
+                className="w-6 h-6 flex items-center justify-center text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-700 rounded-sm transition-colors cursor-pointer"
+                title="Perkecil (-)"
+              >
+                −
+              </button>
+              <span className="text-[10px] font-mono font-bold px-1.5 text-slate-200 min-w-[34px] text-center select-none">
+                {Math.round(zoomScale * 100)}%
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsFitScreenActive(false);
+                  setZoomScale((prev) => Math.min(1.5, Number((prev + 0.05).toFixed(2))));
+                }}
+                className="w-6 h-6 flex items-center justify-center text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-700 rounded-sm transition-colors cursor-pointer"
+                title="Perbesar (+)"
+              >
+                +
+              </button>
+            </div>
+
+            {/* Tombol Simpan PDF */}
+            <button
+              type="button"
+              onClick={() => setShowPrintModal(true)}
+              className="flex items-center gap-1 text-[11px] font-semibold bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white px-2.5 py-1 rounded-md transition-all shadow-xs cursor-pointer ml-1"
+              title="Pratinjau cetak dan simpan file PDF F4"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Simpan PDF</span>
+            </button>
+          </div>
         </div>
 
-        <div className="bg-white border-x border-b border-slate-300 rounded-b-xl overflow-hidden shadow-lg p-2 max-h-[820px] overflow-y-auto">
-          <div className="w-full flex justify-center overflow-x-auto">
-            <F4PrintDocument
-              jurnal={draftJurnal}
-              pegawai={currentPegawai}
-              sekolah={sekolah}
-            />
+        {/* Scaled Preview Document */}
+        <div
+          ref={previewContainerRef}
+          className="bg-slate-200/80 border-x border-b border-slate-300 rounded-b-xl overflow-x-auto overflow-y-auto p-2 sm:p-4 max-h-[820px] flex justify-center"
+        >
+          <div
+            style={{
+              width: `${210 * zoomScale}mm`,
+              minHeight: `${330 * zoomScale}mm`,
+            }}
+            className="relative shrink-0 transition-all duration-150 ease-out mx-auto"
+          >
+            <div
+              style={{
+                width: '210mm',
+                transform: `scale(${zoomScale})`,
+                transformOrigin: 'top left',
+              }}
+              className="shadow-xl bg-white rounded-xs"
+            >
+              <F4PrintDocument
+                jurnal={draftJurnal}
+                pegawai={currentPegawai}
+                sekolah={sekolah}
+              />
+            </div>
           </div>
         </div>
       </div>

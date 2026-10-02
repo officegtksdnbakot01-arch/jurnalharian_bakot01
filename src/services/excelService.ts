@@ -1,5 +1,5 @@
 import ExcelJS from 'exceljs';
-import { Pegawai, SekolahConfig } from '../types';
+import { Pegawai, SekolahConfig, JurnalHarian } from '../types';
 
 const APP_BLUE = 'FF1E3A8A'; // #1e3a8a
 const BORDER_BLACK: Partial<ExcelJS.Borders> = {
@@ -686,4 +686,292 @@ export const importSekolahFromExcel = async (
   });
 
   return updatedConfig;
+};
+
+/* ========================================================================= */
+/* 3. RIWAYAT JURNAL HARIAN: EKSPOR LAPORAN RESMI EXCEL BERWARNA & BERBORDER   */
+/* ========================================================================= */
+
+/**
+ * Mengunduh seluruh Riwayat Jurnal Harian Pegawai ke dalam file Excel (.xlsx)
+ * dengan format tabel profesional, warna resmi, borders penuh, dan identitas sekolah.
+ */
+export const exportRiwayatHarianToExcel = async (
+  jurnals: JurnalHarian[],
+  pegawaiList: Pegawai[],
+  sekolah: SekolahConfig
+): Promise<void> => {
+  const workbook = new ExcelJS.Workbook();
+  workbook.creator = 'SIKAWAN SDN Babelan Kota 01';
+  workbook.created = new Date();
+
+  const worksheet = workbook.addWorksheet('Riwayat Jurnal Harian', {
+    views: [{ showGridLines: true }],
+  });
+
+  // Setup Column Widths
+  worksheet.columns = [
+    { key: 'no', width: 7 },
+    { key: 'tanggal', width: 22 },
+    { key: 'nama', width: 32 },
+    { key: 'nip', width: 25 },
+    { key: 'waktu', width: 18 },
+    { key: 'kategori', width: 30 },
+    { key: 'uraian', width: 56 },
+    { key: 'output', width: 34 },
+    { key: 'status', width: 20 },
+  ];
+
+  // 1. BANNER TITLE ROW 1: "RIWAYAT JURNAL HARIAN PEGAWAI"
+  worksheet.mergeCells('A1:I1');
+  const titleRow = worksheet.getRow(1);
+  titleRow.height = 32;
+  const titleCell = worksheet.getCell('A1');
+  titleCell.value = 'RIWAYAT JURNAL HARIAN PEGAWAI';
+  titleCell.fill = {
+    type: 'pattern',
+    pattern: 'solid',
+    fgColor: { argb: 'FF1E3A8A' }, // Navy Blue
+  };
+  titleCell.font = {
+    name: 'Calibri',
+    size: 14,
+    bold: true,
+    color: { argb: 'FFFFFFFF' },
+  };
+  titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+  // 2. BANNER ROW 2: IDENTITAS SATUAN PENDIDIKAN
+  worksheet.mergeCells('A2:I2');
+  const schoolRow = worksheet.getRow(2);
+  schoolRow.height = 24;
+  const schoolCell = worksheet.getCell('A2');
+  schoolCell.value = `${sekolah.namaSekolah || 'SD NEGERI BABELAN KOTA 01'} · NPSN: ${sekolah.npsn || '20219135'} · ${sekolah.kabupaten || 'Kabupaten Bekasi'}`;
+  schoolCell.fill = {
+    type: 'pattern',
+    pattern: 'solid',
+    fgColor: { argb: 'FF2563EB' }, // Blue 600
+  };
+  schoolCell.font = {
+    name: 'Calibri',
+    size: 11,
+    bold: true,
+    color: { argb: 'FFFFFFFF' },
+  };
+  schoolCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+  // 3. BANNER ROW 3: TAHUN & WAKTU UNDUH
+  worksheet.mergeCells('A3:I3');
+  const infoRow = worksheet.getRow(3);
+  infoRow.height = 20;
+  const infoCell = worksheet.getCell('A3');
+  const nowStr = new Date().toLocaleDateString('id-ID', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+  infoCell.value = `Tahun Pelaporan: ${sekolah.tahunJurnal || 2026}  |  Total Data: ${jurnals.length} Jurnal Harian  |  Dicetak pada: ${nowStr}`;
+  infoCell.fill = {
+    type: 'pattern',
+    pattern: 'solid',
+    fgColor: { argb: 'FFF1F5F9' }, // Slate 100
+  };
+  infoCell.font = {
+    name: 'Calibri',
+    size: 9.5,
+    italic: true,
+    color: { argb: 'FF334155' },
+  };
+  infoCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+  // 4. SPACER ROW 4
+  const spacerRow = worksheet.getRow(4);
+  spacerRow.height = 8;
+
+  // 5. TABLE HEADER (Row 5)
+  const headers = [
+    'NO',
+    'HARI / TANGGAL',
+    'NAMA PEGAWAI',
+    'NIP / NI PPPK',
+    'WAKTU KEGIATAN',
+    'KATEGORI KEGIATAN',
+    'RINCIAN / URAIAN KEGIATAN',
+    'OUTPUT / BUKTI HASIL',
+    'STATUS VERIFIKASI',
+  ];
+
+  const headerRow = worksheet.getRow(5);
+  headerRow.height = 28;
+  headers.forEach((h, idx) => {
+    const colNumber = idx + 1;
+    const cell = headerRow.getCell(colNumber);
+    cell.value = h;
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FF0F172A' }, // Slate 900
+    };
+    cell.font = {
+      name: 'Calibri',
+      size: 10.5,
+      bold: true,
+      color: { argb: 'FFFFFFFF' },
+    };
+    cell.alignment = {
+      vertical: 'middle',
+      horizontal: 'center',
+      wrapText: true,
+    };
+    cell.border = BORDER_BLACK;
+  });
+
+  // 6. POPULATE DATA ROWS (Row 6 onwards)
+  jurnals.forEach((jurnal, index) => {
+    const rowNum = 6 + index;
+    const row = worksheet.getRow(rowNum);
+
+    const foundPegawai = pegawaiList.find((p) => p.id === jurnal.pegawaiId);
+    const nipStr = (foundPegawai?.nip && foundPegawai.nip !== '-')
+      ? foundPegawai.nip
+      : (jurnal.pegawaiId || '-');
+
+    const isEven = index % 2 === 0;
+    const bgArgb = isEven ? 'FFFFFFFF' : 'FFF8FAFC'; // Zebra striping
+
+    // Calculate dynamic row height based on text lines
+    const lineCount = (jurnal.uraianKegiatan || '').split('\n').length;
+    row.height = Math.max(26, Math.min(130, lineCount * 18 + 12));
+
+    const rowData = [
+      index + 1,
+      `${jurnal.hari}, ${jurnal.tanggal}`,
+      jurnal.pegawaiNama || foundPegawai?.nama || '-',
+      nipStr,
+      `${jurnal.jamMulai} - ${jurnal.jamSelesai} WIB`,
+      jurnal.kategori || '-',
+      jurnal.uraianKegiatan || '-',
+      jurnal.outputHasil || '-',
+      jurnal.statusVerifikasi || 'Disetujui',
+    ];
+
+    rowData.forEach((val, colIdx) => {
+      const cell = row.getCell(colIdx + 1);
+      cell.value = val;
+      cell.border = BORDER_BLACK;
+      cell.font = {
+        name: 'Calibri',
+        size: 10,
+        color: { argb: 'FF0F172A' },
+      };
+
+      // Background fill
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: bgArgb },
+      };
+
+      // Specific alignments and highlights
+      if (colIdx === 0) {
+        // No
+        cell.alignment = { vertical: 'middle', horizontal: 'center' };
+      } else if (colIdx === 1) {
+        // Tanggal
+        cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF1E293B' } };
+      } else if (colIdx === 2) {
+        // Nama
+        cell.alignment = { vertical: 'middle', horizontal: 'left' };
+        cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF0F172A' } };
+      } else if (colIdx === 3) {
+        // NIP
+        cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        cell.font = { name: 'Consolas', size: 9.5, color: { argb: 'FF334155' } };
+      } else if (colIdx === 4) {
+        // Waktu
+        cell.alignment = { vertical: 'middle', horizontal: 'center' };
+      } else if (colIdx === 5) {
+        // Kategori
+        cell.alignment = { vertical: 'middle', horizontal: 'left' };
+      } else if (colIdx === 6) {
+        // Uraian
+        cell.alignment = { vertical: 'top', horizontal: 'left', wrapText: true };
+      } else if (colIdx === 7) {
+        // Output
+        cell.alignment = { vertical: 'top', horizontal: 'left', wrapText: true };
+      } else if (colIdx === 8) {
+        // Status Verifikasi (Badge Hijau)
+        cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFDCFCE7' }, // Emerald 100
+        };
+        cell.font = {
+          name: 'Calibri',
+          size: 10,
+          bold: true,
+          color: { argb: 'FF166534' }, // Emerald 800
+        };
+      }
+    });
+  });
+
+  // 7. FOOTER SUMMARY ROW
+  if (jurnals.length > 0) {
+    const summaryRowNum = 6 + jurnals.length;
+    worksheet.mergeCells(`A${summaryRowNum}:H${summaryRowNum}`);
+    const summaryRow = worksheet.getRow(summaryRowNum);
+    summaryRow.height = 24;
+
+    const summaryCell = worksheet.getCell(`A${summaryRowNum}`);
+    summaryCell.value = `TOTAL KESELURUHAN: ${jurnals.length} DOKUMEN JURNAL HARIAN BERHASIL TERCATAT`;
+    summaryCell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFF8FAFC' },
+    };
+    summaryCell.font = {
+      name: 'Calibri',
+      size: 10,
+      bold: true,
+      color: { argb: 'FF1E3A8A' },
+    };
+    summaryCell.alignment = { vertical: 'middle', horizontal: 'right' };
+    summaryCell.border = BORDER_BLACK;
+
+    const lastColCell = worksheet.getCell(`I${summaryRowNum}`);
+    lastColCell.value = 'LENGKAP';
+    lastColCell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFDCFCE7' },
+    };
+    lastColCell.font = {
+      name: 'Calibri',
+      size: 10,
+      bold: true,
+      color: { argb: 'FF166534' },
+    };
+    lastColCell.alignment = { vertical: 'middle', horizontal: 'center' };
+    lastColCell.border = BORDER_BLACK;
+  }
+
+  // Generate File & Trigger Browser Download
+  const buffer = await workbook.xlsx.writeBuffer();
+  const blob = new Blob([buffer], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const cleanSchool = (sekolah.namaSekolah || 'SDN_Babelan_Kota_01').replace(/[^a-zA-Z0-9]/g, '_');
+  const dateStr = new Date().toISOString().split('T')[0];
+  a.download = `Riwayat_Jurnal_Harian_${cleanSchool}_${dateStr}.xlsx`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 };
