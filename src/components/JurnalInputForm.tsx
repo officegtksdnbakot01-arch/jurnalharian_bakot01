@@ -16,7 +16,8 @@ import {
   ImageIcon,
   Plus,
   X,
-  Download
+  Download,
+  Search
 } from 'lucide-react';
 import { syncToGoogleAppsScript } from '../services/gasApi';
 import { downloadF4Pdf } from '../services/pdfExporter';
@@ -62,40 +63,207 @@ const MINUTES = ['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50
 
 const TEMPLATES_KEGIATAN = [
   {
-    label: 'KBM Tatap Muka Sesuai Modul Ajar',
-    uraian: 'Melaksanakan kegiatan belajar mengajar sesuai modul ajar Kurikulum Merdeka, penjelasan materi, dan pendampingan peserta didik.',
-    buktiDukung: 'Modul Ajar, Jurnal KBM, Presensi Siswa',
+    no: 1,
+    text: '1. Kegiatan Pagi Ceria dan Gerakan Tujuh Kebiasaan Anak Indonesia Hebat,',
+    uraian: 'Kegiatan Pagi Ceria dan Gerakan Tujuh Kebiasaan Anak Indonesia Hebat,',
+    buktiDukung: 'Dokumentasi Foto Kegiatan & Presensi Siswa',
+    kategori: 'Pembiasaan Karakter & Upacara Bendera',
+  },
+  {
+    no: 2,
+    text: '2. Melaksanakan Kegiatan Gerakan Literasi Sekolah (GLS)',
+    uraian: 'Melaksanakan Kegiatan Gerakan Literasi Sekolah (GLS)',
+    buktiDukung: 'Jurnal Membaca Siswa & Foto Kegiatan GLS',
+    kategori: 'Pembiasaan Karakter & Upacara Bendera',
+  },
+  {
+    no: 3,
+    text: '3. Mengikuti kegiatan Pembiasaan Senam Pagi Bersama',
+    uraian: 'Mengikuti kegiatan Pembiasaan Senam Pagi Bersama',
+    buktiDukung: 'Dokumentasi Foto Senam Bersama & Presensi',
+    kategori: 'Pembiasaan Karakter & Upacara Bendera',
+  },
+  {
+    no: 4,
+    text: '4. Melaksanakan Upacara bendera Setiap Hari Senin pagi yang diikuti Semua Guru, Tendik dan Siswa',
+    uraian: 'Melaksanakan Upacara bendera Setiap Hari Senin pagi yang diikuti Semua Guru, Tendik dan Siswa',
+    buktiDukung: 'Dokumentasi Upacara & Presensi Pegawai/Siswa',
+    kategori: 'Pembiasaan Karakter & Upacara Bendera',
+  },
+  {
+    no: 5,
+    text: '5. Melaksanakan Kegiatan  Jum’at Bersih semua siswa',
+    uraian: 'Melaksanakan Kegiatan  Jum’at Bersih semua siswa',
+    buktiDukung: 'Dokumentasi Foto Jum’at Bersih & Lembar Observasi Lingkungan',
+    kategori: 'Pembiasaan Karakter & Upacara Bendera',
+  },
+  {
+    no: 6,
+    text: '6. Melaksanakan Kegaiatan Sholat Dhua Berjama’ah yang di Ikuti oleh semua siswa',
+    uraian: 'Melaksanakan Kegaiatan Sholat Dhua Berjama’ah yang di Ikuti oleh semua siswa',
+    buktiDukung: 'Dokumentasi Foto Sholat Dhuha & Buku Pembiasaan Ibadah Siswa',
+    kategori: 'Pembiasaan Karakter & Upacara Bendera',
+  },
+  {
+    no: 7,
+    text: '7. Melaksanakan kegiatan pagi ceria dan G7KIH, kegiatan.pembelajaran bahasa indonesia dan legiatan refleksi',
+    uraian: 'Melaksanakan kegiatan pagi ceria dan G7KIH, kegiatan.pembelajaran bahasa indonesia dan legiatan refleksi',
+    buktiDukung: 'Modul Ajar, Lembar Refleksi Siswa, Dokumentasi Foto',
     kategori: 'Pelaksanaan Pembelajaran (KBM)',
   },
   {
-    label: 'Penyusunan Perangkat & RPP / Modul',
-    uraian: 'Menyusun dan mengembangkan perangkat ajar, lembar kerja peserta didik (LKPD), serta bahan ajar tematik.',
-    buktiDukung: '',
-    kategori: 'Perencanaan Pembelajaran',
+    no: 8,
+    text: '8. Melaksanakan kegiatan.pagi ceria & G7KAIH , Kegiatan pembelajaran Bahasa Indonesia dan PJOK , Latiahan sholawat',
+    uraian: 'Melaksanakan kegiatan.pagi ceria & G7KAIH , Kegiatan pembelajaran Bahasa Indonesia dan PJOK , Latiahan sholawat',
+    buktiDukung: 'Modul Ajar PJOK/Bahasa Indonesia & Dokumentasi Kegiatan',
+    kategori: 'Pelaksanaan Pembelajaran (KBM)',
   },
   {
-    label: 'Penilaian & Evaluasi Asesmen Siswa',
-    uraian: 'Melaksanakan penilaian harian/formatif, mengoreksi tugas peserta didik, dan menganalisis capaian asesmen siswa.',
-    buktiDukung: 'Buku Nilai, Instrumen Asesmen Siswa',
-    kategori: 'Penilaian / Evaluasi Hasil Belajar',
+    no: 9,
+    text: '9. Melaksanakan kegiatan pagi ceria dan G7KAIH , kegiatan Asesmen Sumatuf Tengah Semester 1 :',
+    uraian: 'Melaksanakan kegiatan pagi ceria dan G7KAIH , kegiatan Asesmen Sumatuf Tengah Semester 1 :',
+    buktiDukung: 'Naskah Soal ASTS 1, Berita Acara & Daftar Nilai Siswa',
+    kategori: 'Penilaian & Evaluasi Asesmen',
   },
   {
-    label: 'Piket Sekolah & Presensi Siswa',
-    uraian: 'Melaksanakan tugas guru piket, menyambut kedatangan siswa, memantau ketertiban lingkungan sekolah, dan presensi harian.',
-    buktiDukung: 'Buku Jurnal Piket Harian',
-    kategori: 'Tugas Tambahan / Piket',
+    no: 10,
+    text: '10. Melaksanakan kegiatan pagi ceria dan G7KAIH , kegiatan Asesmen Sumatuf Tengah Semester 2',
+    uraian: 'Melaksanakan kegiatan pagi ceria dan G7KAIH , kegiatan Asesmen Sumatuf Tengah Semester 2',
+    buktiDukung: 'Naskah Soal ASTS 2, Berita Acara & Daftar Nilai Siswa',
+    kategori: 'Penilaian & Evaluasi Asesmen',
   },
   {
-    label: 'Upacara Bendera / Apel Pagi',
+    no: 11,
+    text: '11. Melaksanakan kegiatan pagi ceria dan G7KAIH , kegiatan Penilaian Akhir Sumatif Semester 1',
+    uraian: 'Melaksanakan kegiatan pagi ceria dan G7KAIH , kegiatan Penilaian Akhir Sumatif Semester 1',
+    buktiDukung: 'Naskah Soal PAS 1, Berita Acara & Rekap Nilai Siswa',
+    kategori: 'Penilaian & Evaluasi Asesmen',
+  },
+  {
+    no: 12,
+    text: '12. Melaksanakan kegiatan pagi ceria dan G7KAIH , kegiatan Penilaian Akhir Sumatif Semester 2',
+    uraian: 'Melaksanakan kegiatan pagi ceria dan G7KAIH , kegiatan Penilaian Akhir Sumatif Semester 2',
+    buktiDukung: 'Naskah Soal PAS 2, Berita Acara & Rekap Nilai Siswa',
+    kategori: 'Penilaian & Evaluasi Asesmen',
+  },
+  {
+    no: 13,
+    text: '13. Mengikuti dan membimbing peserta didik dalam upacara bendera/apel pagi guna pembiasaan disiplin dan karakter profil pelajar Pancasila.',
     uraian: 'Mengikuti dan membimbing peserta didik dalam upacara bendera/apel pagi guna pembiasaan disiplin dan karakter profil pelajar Pancasila.',
-    buktiDukung: 'Foto Dokumentasi Upacara & Presensi',
-    kategori: 'Pembiasaan Karakter / Apel',
+    buktiDukung: 'Foto Dokumentasi Upacara & Buku Pembiasaan Karakter',
+    kategori: 'Pembiasaan Karakter & Upacara Bendera',
   },
   {
-    label: 'Pelayanan Administrasi Sekolah',
+    no: 14,
+    text: '14. Melaksanakan kegiatan belajar mengajar sesuai modul ajar Kurikulum Merdeka, penjelasan materi, dan pendampingan peserta didik.',
+    uraian: 'Melaksanakan kegiatan belajar mengajar sesuai modul ajar Kurikulum Merdeka, penjelasan materi, dan pendampingan peserta didik.',
+    buktiDukung: 'Modul Ajar, Lembar Kerja Siswa (LKPD), Jurnal Mengajar',
+    kategori: 'Pelaksanaan Pembelajaran (KBM)',
+  },
+  {
+    no: 15,
+    text: '15. Menyusun dan mengembangkan perangkat ajar, lembar kerja peserta didik (LKPD), serta bahan ajar tematik.',
+    uraian: 'Menyusun dan mengembangkan perangkat ajar, lembar kerja peserta didik (LKPD), serta bahan ajar tematik.',
+    buktiDukung: 'Dokumen Perangkat Ajar & Bahan Ajar Tematik',
+    kategori: 'Penyusunan Perangkat / Modul Ajar',
+  },
+  {
+    no: 16,
+    text: '16. Sosialisasi tentang In House Training yang diikuti oleh Guru dan Tendik.',
+    uraian: 'Sosialisasi tentang In House Training yang diikuti oleh Guru dan Tendik.',
+    buktiDukung: 'Daftar Hadir IHT, Notula Sosialisasi, Foto Kegiatan',
+    kategori: 'Pengembangan Keprofesian (KKG/PMM)',
+  },
+  {
+    no: 17,
+    text: '17. Melaksanakan pengelolaan surat-menyurat dinas, pengarsipan berkas sekolah, dan pelayanan administrasi kependidikan.',
     uraian: 'Melaksanakan pengelolaan surat-menyurat dinas, pengarsipan berkas sekolah, dan pelayanan administrasi kependidikan.',
-    buktiDukung: 'Buku Agenda Surat & Arsip Berkas',
+    buktiDukung: 'Buku Agenda Surat Masuk/Keluar, Berkas Arsip Sekolah',
     kategori: 'Pelayanan Administrasi Sekolah',
+  },
+  {
+    no: 18,
+    text: '18. Pemeriksaan kedisiplinan pakaian seragam dan kerapian siswa,',
+    uraian: 'Pemeriksaan kedisiplinan pakaian seragam dan kerapian siswa,',
+    buktiDukung: 'Buku Catatan Ketertiban & Kerapian Siswa',
+    kategori: 'Pembiasaan Karakter & Upacara Bendera',
+  },
+  {
+    no: 19,
+    text: '19. Pelaksanaan KBM tatap muka materi inti sesuai Modul Ajar,',
+    uraian: 'Pelaksanaan KBM tatap muka materi inti sesuai Modul Ajar,',
+    buktiDukung: 'Buku Agenda Kelas, Modul Ajar, Presensi Siswa',
+    kategori: 'Pelaksanaan Pembelajaran (KBM)',
+  },
+  {
+    no: 20,
+    text: '20. Pembelajaran interaktif, diskusi kelompok terarah, dan presentasi siswa,',
+    uraian: 'Pembelajaran interaktif, diskusi kelompok terarah, dan presentasi siswa,',
+    buktiDukung: 'Lembar Observasi Diskusi, LKPD Kelompok, Dokumentasi KBM',
+    kategori: 'Pelaksanaan Pembelajaran (KBM)',
+  },
+  {
+    no: 21,
+    text: '21. Pelaksanaan kegiatan Projek Penguatan Profil Pelajar Pancasila (P5),',
+    uraian: 'Pelaksanaan kegiatan Projek Penguatan Profil Pelajar Pancasila (P5),',
+    buktiDukung: 'Modul Projek P5, Jurnal Aktivitas Siswa, Dokumentasi Karya',
+    kategori: 'Pelaksanaan Pembelajaran (KBM)',
+  },
+  {
+    no: 22,
+    text: '22. Pendampingan aktivitas belajar siswa dan tanya jawab pemahaman materi,',
+    uraian: 'Pendampingan aktivitas belajar siswa dan tanya jawab pemahaman materi,',
+    buktiDukung: 'Catatan Observasi Pembelajaran & Catatan Refleksi',
+    kategori: 'Pelaksanaan Pembelajaran (KBM)',
+  },
+  {
+    no: 23,
+    text: '23. Bimbingan remedial bagi siswa yang belum mencapai tujuan pembelajaran,',
+    uraian: 'Bimbingan remedial bagi siswa yang belum mencapai tujuan pembelajaran,',
+    buktiDukung: 'Daftar Nilai Remedial & Lembar Soal Perbaikan',
+    kategori: 'Bimbingan Siswa & Ekstrakurikuler',
+  },
+  {
+    no: 24,
+    text: '24. Pendampingan khusus literasi dan numerasi terbimbing di pojok baca,',
+    uraian: 'Pendampingan khusus literasi dan numerasi terbimbing di pojok baca,',
+    buktiDukung: 'Jurnal Pojok Baca & Catatan Progres Membaca Siswa',
+    kategori: 'Bimbingan Siswa & Ekstrakurikuler',
+  },
+  {
+    no: 25,
+    text: '25. Pelaksanaan asesmen formatif harian dan untuk pemahaman materi,',
+    uraian: 'Pelaksanaan asesmen formatif harian dan untuk pemahaman materi,',
+    buktiDukung: 'Lembar Asesmen Formatif & Buku Nilai Harian',
+    kategori: 'Penilaian & Evaluasi Asesmen',
+  },
+  {
+    no: 26,
+    text: '26. Pelaksanaan asesmen sumatif materi / ulangan harian,',
+    uraian: 'Pelaksanaan asesmen sumatif materi / ulangan harian,',
+    buktiDukung: 'Naskah Soal Sumatif, Lembar Jawaban & Daftar Nilai',
+    kategori: 'Penilaian & Evaluasi Asesmen',
+  },
+  {
+    no: 27,
+    text: '27. Pengembangan media pembelajaran interaktif dan bahan tayang digital, Penyusunan instrumen kisi-kisi soal dan rubrik penilaian asesmen,',
+    uraian: 'Pengembangan media pembelajaran interaktif dan bahan tayang digital, Penyusunan instrumen kisi-kisi soal dan rubrik penilaian asesmen,',
+    buktiDukung: 'Slide Bahan Tayang, Kisi-kisi Soal & Rubrik Penilaian',
+    kategori: 'Penyusunan Perangkat / Modul Ajar',
+  },
+  {
+    no: 28,
+    text: '28. Pengisian administrasi presensi siswa dan rekapitulasi ketidakhadiran,',
+    uraian: 'Pengisian administrasi presensi siswa dan rekapitulasi ketidakhadiran,',
+    buktiDukung: 'Buku Presensi Harian & Rekap Absensi Bulanan',
+    kategori: 'Pelayanan Administrasi Sekolah',
+  },
+  {
+    no: 29,
+    text: '29. Kegiatan Komunitas Belajar (Kombel) intra-sekolah / KKG guru,',
+    uraian: 'Kegiatan Komunitas Belajar (Kombel) intra-sekolah / KKG guru,',
+    buktiDukung: 'Daftar Hadir Kombel/KKG, Notula Kegiatan, Foto Dokumentasi',
+    kategori: 'Pengembangan Keprofesian (KKG/PMM)',
   },
 ];
 
@@ -219,6 +387,7 @@ export const JurnalInputForm: React.FC<JurnalInputFormProps> = ({
 
   // Modal template picker state
   const [templateModalTargetIndex, setTemplateModalTargetIndex] = useState<number | null>(null);
+  const [templateSearch, setTemplateSearch] = useState('');
 
   // UI states
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -1092,49 +1261,84 @@ export const JurnalInputForm: React.FC<JurnalInputFormProps> = ({
 
       {/* MODAL DIALOG TEMPLATE KEGIATAN PER BARIS */}
       {templateModalTargetIndex !== null && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full p-5 space-y-4 animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-emerald-600" />
-                <h4 className="font-bold text-sm text-slate-800">
-                  Pilih Template Kegiatan (Baris {templateModalTargetIndex + 1})
-                </h4>
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-5 sm:p-6 space-y-4 animate-in fade-in zoom-in-95 flex flex-col max-h-[90vh]">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="font-extrabold text-sm sm:text-base text-slate-900">
+                    Pilih Template Kegiatan
+                  </h4>
+                  <p className="text-[11px] text-slate-500">
+                    Tersedia {TEMPLATES_KEGIATAN.length} template kegiatan kedinasan resmi
+                  </p>
+                </div>
               </div>
               <button
                 type="button"
-                onClick={() => setTemplateModalTargetIndex(null)}
-                className="text-slate-400 hover:text-slate-600 p-1"
+                onClick={() => {
+                  setTemplateModalTargetIndex(null);
+                  setTemplateSearch('');
+                }}
+                className="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
-              {TEMPLATES_KEGIATAN.map((tmpl, tIdx) => (
-                <button
-                  key={tIdx}
-                  type="button"
-                  onClick={() => handleApplyTemplateToItem(templateModalTargetIndex, tmpl)}
-                  className="w-full text-left p-3 rounded-xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50/60 transition-all cursor-pointer group"
-                >
-                  <p className="font-bold text-xs text-slate-900 group-hover:text-blue-700">
-                    {tmpl.label}
-                  </p>
-                  <p className="text-[11px] text-slate-600 mt-1 line-clamp-2">
-                    {tmpl.uraian}
-                  </p>
-                </button>
-              ))}
+            {/* Input Filter Pencarian Template */}
+            <div className="relative shrink-0">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                value={templateSearch}
+                onChange={(e) => setTemplateSearch(e.target.value)}
+                placeholder="Cari kegiatan (contoh: P5, upacara, KBM, modul ajar, remedial, kombel, PMM)..."
+                className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-hidden focus:ring-2 focus:ring-blue-600 focus:bg-white"
+              />
             </div>
 
-            <div className="pt-2 flex justify-end">
+            {/* List 24 Template Kegiatan Polos Sesuai Lampiran */}
+            <div className="space-y-1.5 overflow-y-auto pr-1 flex-1 min-h-[260px]">
+              {TEMPLATES_KEGIATAN
+                .filter((tmpl) =>
+                  templateSearch.trim() === '' ||
+                  tmpl.text.toLowerCase().includes(templateSearch.toLowerCase()) ||
+                  tmpl.uraian.toLowerCase().includes(templateSearch.toLowerCase())
+                )
+                .map((tmpl, tIdx) => (
+                  <button
+                    key={tIdx}
+                    type="button"
+                    onClick={() => {
+                      handleApplyTemplateToItem(templateModalTargetIndex, tmpl);
+                      setTemplateSearch('');
+                    }}
+                    className="w-full text-left px-3.5 py-2.5 rounded-xl border border-slate-200 hover:border-blue-600 hover:bg-blue-50/80 transition-all cursor-pointer group"
+                  >
+                    <p className="text-xs sm:text-sm text-slate-800 group-hover:text-blue-900 leading-relaxed font-medium">
+                      {tmpl.text}
+                    </p>
+                  </button>
+                ))}
+            </div>
+
+            <div className="pt-2 border-t border-slate-100 flex items-center justify-between shrink-0">
+              <span className="text-[11px] text-slate-500 font-medium hidden sm:inline">
+                Klik salah satu kegiatan untuk mengisi baris {templateModalTargetIndex + 1} secara otomatis
+              </span>
               <button
                 type="button"
-                onClick={() => setTemplateModalTargetIndex(null)}
-                className="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg"
+                onClick={() => {
+                  setTemplateModalTargetIndex(null);
+                  setTemplateSearch('');
+                }}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 text-xs font-semibold rounded-lg cursor-pointer transition-colors"
               >
-                Batal
+                Batal / Tutup
               </button>
             </div>
           </div>

@@ -95,59 +95,266 @@ export const KATEGORI_AKTIVITAS = [
 
 export const PRESET_KEGIATAN = [
   {
-    label: 'KBM Tematik / Kurikulum Merdeka',
-    kategori: 'Pelaksanaan Pembelajaran (KBM)',
-    jamMulai: '07:00',
-    jamSelesai: '14:30',
-    uraian: 'Melaksanakan kegiatan belajar mengajar sesuai jadwal, apersepsi materi, pendampingan kerja kelompok peserta didik, serta refleksi pembelajaran.',
-    output: 'Terlaksananya KBM dan lembar kerja peserta didik',
-    volume: '1 Sesi KBM / 30 Siswa'
-  },
-  {
-    label: 'Penyusunan Modul Ajar / RPP',
-    kategori: 'Penyusunan Perangkat / Modul Ajar',
-    jamMulai: '07:30',
-    jamSelesai: '14:30',
-    uraian: 'Menyusun rancangan Modul Ajar Kurikulum Merdeka, menyusun rubrik asesmen, dan media ajar interaktif untuk materi bab berikutnya.',
-    output: 'Dokumen Modul Ajar lengkap dengan LKPD',
-    volume: '1 Dokumen Modul Ajar'
-  },
-  {
-    label: 'Pelaksanaan Asesmen Sumatif / Formatif',
-    kategori: 'Penilaian & Evaluasi Asesmen',
-    jamMulai: '07:30',
-    jamSelesai: '13:30',
-    uraian: 'Melaksanakan asesmen formatif/sumatif lingkup materi, mengoreksi lembar jawaban peserta didik, dan menginput hasil nilai ke buku nilai.',
-    output: 'Daftar nilai formatif dan analisis ketercapaian tujuan pembelajaran',
-    volume: 'Daftar Nilai / 32 Siswa'
-  },
-  {
-    label: 'Pembiasaan Karakter & Sholat Dhuha / Senam',
+    label: '1. Kegiatan Pagi Ceria dan Gerakan Tujuh Kebiasaan Anak Indonesia Hebat,',
     kategori: 'Pembiasaan Karakter & Upacara Bendera',
     jamMulai: '06:45',
-    jamSelesai: '08:00',
-    uraian: 'Mendampingi peserta didik dalam pembiasaan pagi (senam sehat/sholat dhuha bersama, pembacaan Asmaul Husna, dan literasi 15 menit).',
-    output: 'Terlaksananya pembiasaan karakter peserta didik dengan tertib',
+    jamSelesai: '07:30',
+    uraian: 'Kegiatan Pagi Ceria dan Gerakan Tujuh Kebiasaan Anak Indonesia Hebat,',
+    output: 'Dokumentasi Foto Kegiatan & Presensi Siswa',
     volume: '1 Kegiatan Pembiasaan'
   },
   {
-    label: 'Kegiatan Ekstrakurikuler Pramuka',
-    kategori: 'Bimbingan Siswa & Ekstrakurikuler',
-    jamMulai: '14:00',
-    jamSelesai: '16:00',
-    uraian: 'Melatih dan mendampingi kegiatan kepramukaan golongan Siaga/Penggalang mengenai tali-temali, sandi, dan penanaman dasa darma.',
-    output: 'Presensi latihan kepramukaan dan dokumentasi kegiatan',
-    volume: '1 Sesi Latihan / 45 Siswa'
+    label: '2. Melaksanakan Kegiatan Gerakan Literasi Sekolah (GLS)',
+    kategori: 'Pembiasaan Karakter & Upacara Bendera',
+    jamMulai: '07:00',
+    jamSelesai: '07:30',
+    uraian: 'Melaksanakan Kegiatan Gerakan Literasi Sekolah (GLS)',
+    output: 'Jurnal Membaca Siswa & Foto Kegiatan GLS',
+    volume: '1 Sesi GLS'
   },
   {
-    label: 'Pelayanan Tata Usaha / Operator Dapodik',
+    label: '3. Mengikuti kegiatan Pembiasaan Senam Pagi Bersama',
+    kategori: 'Pembiasaan Karakter & Upacara Bendera',
+    jamMulai: '06:45',
+    jamSelesai: '07:30',
+    uraian: 'Mengikuti kegiatan Pembiasaan Senam Pagi Bersama',
+    output: 'Dokumentasi Foto Senam Bersama & Presensi',
+    volume: '1 Sesi Senam Bersama'
+  },
+  {
+    label: '4. Melaksanakan Upacara bendera Setiap Hari Senin pagi yang diikuti Semua Guru, Tendik dan Siswa',
+    kategori: 'Pembiasaan Karakter & Upacara Bendera',
+    jamMulai: '07:00',
+    jamSelesai: '07:45',
+    uraian: 'Melaksanakan Upacara bendera Setiap Hari Senin pagi yang diikuti Semua Guru, Tendik dan Siswa',
+    output: 'Dokumentasi Upacara & Presensi Pegawai/Siswa',
+    volume: '1 Kegiatan Upacara'
+  },
+  {
+    label: '5. Melaksanakan Kegiatan  Jum’at Bersih semua siswa',
+    kategori: 'Pembiasaan Karakter & Upacara Bendera',
+    jamMulai: '07:00',
+    jamSelesai: '07:45',
+    uraian: 'Melaksanakan Kegiatan  Jum’at Bersih semua siswa',
+    output: 'Dokumentasi Foto Jum’at Bersih & Lembar Observasi Lingkungan',
+    volume: '1 Sesi Jum’at Bersih'
+  },
+  {
+    label: '6. Melaksanakan Kegaiatan Sholat Dhua Berjama’ah yang di Ikuti oleh semua siswa',
+    kategori: 'Pembiasaan Karakter & Upacara Bendera',
+    jamMulai: '07:00',
+    jamSelesai: '07:45',
+    uraian: 'Melaksanakan Kegaiatan Sholat Dhua Berjama’ah yang di Ikuti oleh semua siswa',
+    output: 'Dokumentasi Foto Sholat Dhuha & Buku Pembiasaan Ibadah Siswa',
+    volume: '1 Sesi Sholat Dhuha'
+  },
+  {
+    label: '7. Melaksanakan kegiatan pagi ceria dan G7KIH, kegiatan.pembelajaran bahasa indonesia dan legiatan refleksi',
+    kategori: 'Pelaksanaan Pembelajaran (KBM)',
+    jamMulai: '07:00',
+    jamSelesai: '11:30',
+    uraian: 'Melaksanakan kegiatan pagi ceria dan G7KIH, kegiatan.pembelajaran bahasa indonesia dan legiatan refleksi',
+    output: 'Modul Ajar, Lembar Refleksi Siswa, Dokumentasi Foto',
+    volume: '1 Sesi KBM'
+  },
+  {
+    label: '8. Melaksanakan kegiatan.pagi ceria & G7KAIH , Kegiatan pembelajaran Bahasa Indonesia dan PJOK , Latiahan sholawat',
+    kategori: 'Pelaksanaan Pembelajaran (KBM)',
+    jamMulai: '07:00',
+    jamSelesai: '12:00',
+    uraian: 'Melaksanakan kegiatan.pagi ceria & G7KAIH , Kegiatan pembelajaran Bahasa Indonesia dan PJOK , Latiahan sholawat',
+    output: 'Modul Ajar PJOK/Bahasa Indonesia & Dokumentasi Kegiatan',
+    volume: '1 Sesi KBM'
+  },
+  {
+    label: '9. Melaksanakan kegiatan pagi ceria dan G7KAIH , kegiatan Asesmen Sumatuf Tengah Semester 1 :',
+    kategori: 'Penilaian & Evaluasi Asesmen',
+    jamMulai: '07:00',
+    jamSelesai: '12:00',
+    uraian: 'Melaksanakan kegiatan pagi ceria dan G7KAIH , kegiatan Asesmen Sumatuf Tengah Semester 1 :',
+    output: 'Naskah Soal ASTS 1, Berita Acara & Daftar Nilai Siswa',
+    volume: '1 Sesi Asesmen'
+  },
+  {
+    label: '10. Melaksanakan kegiatan pagi ceria dan G7KAIH , kegiatan Asesmen Sumatuf Tengah Semester 2',
+    kategori: 'Penilaian & Evaluasi Asesmen',
+    jamMulai: '07:00',
+    jamSelesai: '12:00',
+    uraian: 'Melaksanakan kegiatan pagi ceria dan G7KAIH , kegiatan Asesmen Sumatuf Tengah Semester 2',
+    output: 'Naskah Soal ASTS 2, Berita Acara & Daftar Nilai Siswa',
+    volume: '1 Sesi Asesmen'
+  },
+  {
+    label: '11. Melaksanakan kegiatan pagi ceria dan G7KAIH , kegiatan Penilaian Akhir Sumatif Semester 1',
+    kategori: 'Penilaian & Evaluasi Asesmen',
+    jamMulai: '07:00',
+    jamSelesai: '12:00',
+    uraian: 'Melaksanakan kegiatan pagi ceria dan G7KAIH , kegiatan Penilaian Akhir Sumatif Semester 1',
+    output: 'Naskah Soal PAS 1, Berita Acara & Rekap Nilai Siswa',
+    volume: '1 Sesi Penilaian'
+  },
+  {
+    label: '12. Melaksanakan kegiatan pagi ceria dan G7KAIH , kegiatan Penilaian Akhir Sumatif Semester 2',
+    kategori: 'Penilaian & Evaluasi Asesmen',
+    jamMulai: '07:00',
+    jamSelesai: '12:00',
+    uraian: 'Melaksanakan kegiatan pagi ceria dan G7KAIH , kegiatan Penilaian Akhir Sumatif Semester 2',
+    output: 'Naskah Soal PAS 2, Berita Acara & Rekap Nilai Siswa',
+    volume: '1 Sesi Penilaian'
+  },
+  {
+    label: '13. Mengikuti dan membimbing peserta didik dalam upacara bendera/apel pagi guna pembiasaan disiplin dan karakter profil pelajar Pancasila.',
+    kategori: 'Pembiasaan Karakter & Upacara Bendera',
+    jamMulai: '07:00',
+    jamSelesai: '07:45',
+    uraian: 'Mengikuti dan membimbing peserta didik dalam upacara bendera/apel pagi guna pembiasaan disiplin dan karakter profil pelajar Pancasila.',
+    output: 'Foto Dokumentasi Upacara & Buku Pembiasaan Karakter',
+    volume: '1 Kegiatan Upacara/Apel'
+  },
+  {
+    label: '14. Melaksanakan kegiatan belajar mengajar sesuai modul ajar Kurikulum Merdeka, penjelasan materi, dan pendampingan peserta didik.',
+    kategori: 'Pelaksanaan Pembelajaran (KBM)',
+    jamMulai: '07:30',
+    jamSelesai: '11:30',
+    uraian: 'Melaksanakan kegiatan belajar mengajar sesuai modul ajar Kurikulum Merdeka, penjelasan materi, dan pendampingan peserta didik.',
+    output: 'Modul Ajar, Lembar Kerja Siswa (LKPD), Jurnal Mengajar',
+    volume: '1 Sesi KBM / 30 Siswa'
+  },
+  {
+    label: '15. Menyusun dan mengembangkan perangkat ajar, lembar kerja peserta didik (LKPD), serta bahan ajar tematik.',
+    kategori: 'Penyusunan Perangkat / Modul Ajar',
+    jamMulai: '11:30',
+    jamSelesai: '13:00',
+    uraian: 'Menyusun dan mengembangkan perangkat ajar, lembar kerja peserta didik (LKPD), serta bahan ajar tematik.',
+    output: 'Dokumen Perangkat Ajar & Bahan Ajar Tematik',
+    volume: '1 Dokumen Modul Ajar'
+  },
+  {
+    label: '16. Sosialisasi tentang In House Training yang diikuti oleh Guru dan Tendik.',
+    kategori: 'Pengembangan Keprofesian (KKG/PMM)',
+    jamMulai: '13:00',
+    jamSelesai: '15:00',
+    uraian: 'Sosialisasi tentang In House Training yang diikuti oleh Guru dan Tendik.',
+    output: 'Daftar Hadir IHT, Notula Sosialisasi, Foto Kegiatan',
+    volume: '1 Kegiatan IHT'
+  },
+  {
+    label: '17. Melaksanakan pengelolaan surat-menyurat dinas, pengarsipan berkas sekolah, dan pelayanan administrasi kependidikan.',
     kategori: 'Pelayanan Administrasi Sekolah',
     jamMulai: '07:30',
-    jamSelesai: '15:30',
-    uraian: 'Menginput dan memutakhirkan data kepegawaian PTK, presensi online, kelengkapan arsip surat masuk/keluar, dan layanan administrasi sekolah.',
-    output: 'Arsip administrasi dan laporan pemutakhiran data',
+    jamSelesai: '14:30',
+    uraian: 'Melaksanakan pengelolaan surat-menyurat dinas, pengarsipan berkas sekolah, dan pelayanan administrasi kependidikan.',
+    output: 'Buku Agenda Surat Masuk/Keluar, Berkas Arsip Sekolah',
     volume: '1 Berkas Administrasi'
-  }
+  },
+  {
+    label: '18. Pemeriksaan kedisiplinan pakaian seragam dan kerapian siswa,',
+    kategori: 'Pembiasaan Karakter & Upacara Bendera',
+    jamMulai: '06:45',
+    jamSelesai: '07:15',
+    uraian: 'Pemeriksaan kedisiplinan pakaian seragam dan kerapian siswa,',
+    output: 'Buku Catatan Ketertiban & Kerapian Siswa',
+    volume: '1 Sesi Pemeriksaan'
+  },
+  {
+    label: '19. Pelaksanaan KBM tatap muka materi inti sesuai Modul Ajar,',
+    kategori: 'Pelaksanaan Pembelajaran (KBM)',
+    jamMulai: '07:30',
+    jamSelesai: '11:00',
+    uraian: 'Pelaksanaan KBM tatap muka materi inti sesuai Modul Ajar,',
+    output: 'Buku Agenda Kelas, Modul Ajar, Presensi Siswa',
+    volume: '1 Sesi KBM'
+  },
+  {
+    label: '20. Pembelajaran interaktif, diskusi kelompok terarah, dan presentasi siswa,',
+    kategori: 'Pelaksanaan Pembelajaran (KBM)',
+    jamMulai: '08:30',
+    jamSelesai: '11:30',
+    uraian: 'Pembelajaran interaktif, diskusi kelompok terarah, dan presentasi siswa,',
+    output: 'Lembar Observasi Diskusi, LKPD Kelompok, Dokumentasi KBM',
+    volume: '1 Sesi Diskusi'
+  },
+  {
+    label: '21. Pelaksanaan kegiatan Projek Penguatan Profil Pelajar Pancasila (P5),',
+    kategori: 'Pelaksanaan Pembelajaran (KBM)',
+    jamMulai: '09:30',
+    jamSelesai: '12:00',
+    uraian: 'Pelaksanaan kegiatan Projek Penguatan Profil Pelajar Pancasila (P5),',
+    output: 'Modul Projek P5, Jurnal Aktivitas Siswa, Dokumentasi Karya',
+    volume: '1 Sesi Projek P5'
+  },
+  {
+    label: '22. Pendampingan aktivitas belajar siswa dan tanya jawab pemahaman materi,',
+    kategori: 'Pelaksanaan Pembelajaran (KBM)',
+    jamMulai: '10:00',
+    jamSelesai: '12:00',
+    uraian: 'Pendampingan aktivitas belajar siswa dan tanya jawab pemahaman materi,',
+    output: 'Catatan Observasi Pembelajaran & Catatan Refleksi',
+    volume: '1 Sesi Pendampingan'
+  },
+  {
+    label: '23. Bimbingan remedial bagi siswa yang belum mencapai tujuan pembelajaran,',
+    kategori: 'Bimbingan Siswa & Ekstrakurikuler',
+    jamMulai: '12:30',
+    jamSelesai: '13:30',
+    uraian: 'Bimbingan remedial bagi siswa yang belum mencapai tujuan pembelajaran,',
+    output: 'Daftar Nilai Remedial & Lembar Soal Perbaikan',
+    volume: '1 Sesi Remedial'
+  },
+  {
+    label: '24. Pendampingan khusus literasi dan numerasi terbimbing di pojok baca,',
+    kategori: 'Bimbingan Siswa & Ekstrakurikuler',
+    jamMulai: '07:00',
+    jamSelesai: '07:30',
+    uraian: 'Pendampingan khusus literasi dan numerasi terbimbing di pojok baca,',
+    output: 'Jurnal Pojok Baca & Catatan Progres Membaca Siswa',
+    volume: '1 Sesi Literasi/Numerasi'
+  },
+  {
+    label: '25. Pelaksanaan asesmen formatif harian dan untuk pemahaman materi,',
+    kategori: 'Penilaian & Evaluasi Asesmen',
+    jamMulai: '08:00',
+    jamSelesai: '09:30',
+    uraian: 'Pelaksanaan asesmen formatif harian dan untuk pemahaman materi,',
+    output: 'Lembar Asesmen Formatif & Buku Nilai Harian',
+    volume: '1 Dokumen Asesmen'
+  },
+  {
+    label: '26. Pelaksanaan asesmen sumatif materi / ulangan harian,',
+    kategori: 'Penilaian & Evaluasi Asesmen',
+    jamMulai: '07:30',
+    jamSelesai: '09:30',
+    uraian: 'Pelaksanaan asesmen sumatif materi / ulangan harian,',
+    output: 'Naskah Soal Sumatif, Lembar Jawaban & Daftar Nilai',
+    volume: '1 Sesi Asesmen Sumatif'
+  },
+  {
+    label: '27. Pengembangan media pembelajaran interaktif dan bahan tayang digital, Penyusunan instrumen kisi-kisi soal dan rubrik penilaian asesmen,',
+    kategori: 'Penyusunan Perangkat / Modul Ajar',
+    jamMulai: '13:00',
+    jamSelesai: '15:00',
+    uraian: 'Pengembangan media pembelajaran interaktif dan bahan tayang digital, Penyusunan instrumen kisi-kisi soal dan rubrik penilaian asesmen,',
+    output: 'Slide Bahan Tayang, Kisi-kisi Soal & Rubrik Penilaian',
+    volume: '1 Perangkat Media/Asesmen'
+  },
+  {
+    label: '28. Pengisian administrasi presensi siswa dan rekapitulasi ketidakhadiran,',
+    kategori: 'Pelayanan Administrasi Sekolah',
+    jamMulai: '07:15',
+    jamSelesai: '08:00',
+    uraian: 'Pengisian administrasi presensi siswa dan rekapitulasi ketidakhadiran,',
+    output: 'Buku Presensi Harian & Rekap Absensi Bulanan',
+    volume: '1 Rekapitulasi Presensi'
+  },
+  {
+    label: '29. Kegiatan Komunitas Belajar (Kombel) intra-sekolah / KKG guru,',
+    kategori: 'Pengembangan Keprofesian (KKG/PMM)',
+    jamMulai: '13:30',
+    jamSelesai: '15:30',
+    uraian: 'Kegiatan Komunitas Belajar (Kombel) intra-sekolah / KKG guru,',
+    output: 'Daftar Hadir Kombel/KKG, Notula Kegiatan, Foto Dokumentasi',
+    volume: '1 Pertemuan Kombel/KKG'
+  },
 ];
 
 export const GOOGLE_APPS_SCRIPT_CODE = `/**
